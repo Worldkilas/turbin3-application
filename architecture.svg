@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="920" viewBox="0 0 1440 920" role="img" aria-labelledby="title description">
+  <title id="title">Pre-Req Vault program architecture</title>
+  <desc id="description">A user calls four Anchor instructions on the Pre-Req Vault program. Per-user state and vault PDAs hold bumps and SOL. The System Program handles account creation and transfers. Withdrawal also calls the external registration program to initialize an application account.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5271a5"/>
+    </marker>
+    <marker id="arrow-violet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8765bd"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #202b3a; }
+      .title { font-size: 32px; font-weight: 700; }
+      .subtitle { font-size: 16px; fill: #536174; }
+      .section { font-size: 13px; font-weight: 700; letter-spacing: 1.1px; fill: #627084; }
+      .heading { font-size: 18px; font-weight: 700; }
+      .body { font-size: 14px; fill: #455367; }
+      .small { font-size: 12px; fill: #637185; }
+      .mono { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: 12px; fill: #455367; }
+      .program { fill: #f3f6fc; stroke: #879bbc; stroke-width: 2; }
+      .instruction { fill: #ffffff; stroke: #d4dce8; stroke-width: 1.5; }
+      .account { fill: #eaf0fb; stroke: #aab9d1; stroke-width: 1.5; }
+      .external { fill: #f8f9fb; stroke: #cbd3df; stroke-width: 1.5; }
+      .registration { fill: #f4effb; stroke: #c5b5df; stroke-width: 1.5; }
+      .user { fill: #fff6e8; stroke: #e1c58f; stroke-width: 1.5; }
+      .line { fill: none; stroke: #5271a5; stroke-width: 2.5; marker-end: url(#arrow-blue); }
+      .cpi { fill: none; stroke: #8765bd; stroke-width: 2.5; marker-end: url(#arrow-violet); }
+      .step { fill: #dce6f5; }
+      .step-text { font-size: 13px; font-weight: 700; fill: #36547e; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="920" fill="#fbfcfe"/>
+  <text x="60" y="62" class="title">Pre-Req Vault | How the program works</text>
+  <text x="60" y="94" class="subtitle">A per-user SOL vault managed by an Anchor program, with registration triggered during withdrawal.</text>
+
+  <text x="60" y="157" class="section">CALLER</text>
+  <rect x="60" y="176" width="235" height="172" rx="16" class="user"/>
+  <circle cx="96" cy="216" r="17" fill="#f3dfb8"/>
+  <path d="M72 267c3-21 14-31 24-31s21 10 24 31" fill="#f3dfb8"/>
+  <text x="132" y="216" class="heading">User / wallet</text>
+  <text x="84" y="292" class="body">Signs each instruction</text>
+  <text x="84" y="317" class="body">Pays rent and fees</text>
+
+  <path d="M295 263 H355" class="line"/>
+  <text x="302" y="246" class="small">signed calls</text>
+
+  <rect x="355" y="140" width="690" height="612" rx="20" class="program"/>
+  <text x="390" y="184" class="section">ON-CHAIN PROGRAM</text>
+  <text x="390" y="214" class="heading">Pre-Req Vault · Anchor</text>
+  <text x="390" y="238" class="small">One user owns one state PDA and one SOL-holding vault PDA.</text>
+
+  <rect x="385" y="262" width="300" height="174" rx="12" class="instruction"/>
+  <circle cx="410" cy="290" r="14" class="step"/>
+  <text x="406" y="295" class="step-text">1</text>
+  <text x="434" y="296" class="heading">initialize</text>
+  <text x="405" y="329" class="body">Creates the state PDA; derives the</text>
+  <text x="405" y="350" class="body">vault PDA and saves both bumps.</text>
+  <text x="405" y="404" class="small">User funds state-account rent.</text>
+
+  <rect x="715" y="262" width="300" height="174" rx="12" class="instruction"/>
+  <circle cx="740" cy="290" r="14" class="step"/>
+  <text x="736" y="295" class="step-text">2</text>
+  <text x="764" y="296" class="heading">deposit(amount)</text>
+  <text x="735" y="329" class="body">Transfers lamports from the user</text>
+  <text x="735" y="350" class="body">to the vault via the System Program.</text>
+  <text x="735" y="404" class="small">Vault balance is the source of truth.</text>
+
+  <rect x="385" y="454" width="300" height="174" rx="12" class="instruction"/>
+  <circle cx="410" cy="482" r="14" class="step"/>
+  <text x="406" y="487" class="step-text">3</text>
+  <text x="434" y="488" class="heading">withdraw(amount)</text>
+  <text x="405" y="521" class="body">Vault PDA signs SOL transfer to user;</text>
+  <text x="405" y="542" class="body">then CPI initializes registration.</text>
+  <text x="405" y="596" class="small">Both actions succeed or roll back together.</text>
+
+  <rect x="715" y="454" width="300" height="174" rx="12" class="instruction"/>
+  <circle cx="740" cy="482" r="14" class="step"/>
+  <text x="736" y="487" class="step-text">4</text>
+  <text x="764" y="488" class="heading">close</text>
+  <text x="735" y="521" class="body">Sends remaining vault lamports</text>
+  <text x="735" y="542" class="body">and state-account rent back to user.</text>
+  <text x="735" y="596" class="small">State account is closed; vault is emptied.</text>
+
+  <rect x="385" y="650" width="300" height="76" rx="12" class="account"/>
+  <text x="405" y="678" class="heading">VaultState PDA</text>
+  <text x="405" y="703" class="mono">[b"state", user] · stores both bumps</text>
+  <rect x="715" y="650" width="300" height="76" rx="12" class="account"/>
+  <text x="735" y="678" class="heading">Vault PDA</text>
+  <text x="735" y="703" class="mono">[b"vault", vault_state] · holds SOL</text>
+
+  <path d="M685 688 H715" class="line"/>
+  <text x="678" y="668" class="small">derives</text>
+
+  <text x="1090" y="157" class="section">SOLANA PROGRAMS</text>
+  <rect x="1090" y="176" width="290" height="192" rx="16" class="external"/>
+  <text x="1116" y="214" class="heading">System Program</text>
+  <text x="1116" y="245" class="body">Creates the state account</text>
+  <text x="1116" y="268" class="body">and moves lamports:</text>
+  <text x="1116" y="301" class="mono">deposit: user → vault</text>
+  <text x="1116" y="324" class="mono">withdraw / close: vault → user</text>
+  <path d="M1045 291 H1090" class="cpi"/>
+  <text x="1049" y="274" class="small">CPI</text>
+
+  <rect x="1090" y="420" width="290" height="240" rx="16" class="registration"/>
+  <text x="1116" y="459" class="heading">Registration program</text>
+  <text x="1116" y="483" class="small">External Q3 prerequisites program</text>
+  <text x="1116" y="515" class="mono">TRBZyQHB...KWDM</text>
+  <rect x="1116" y="542" width="238" height="88" rx="10" fill="#ffffff" stroke="#d5c9e8" stroke-width="1.3"/>
+  <text x="1132" y="570" class="heading" style="font-size:15px">Application account PDA</text>
+  <text x="1132" y="596" class="mono">[b"prereqs", user]</text>
+  <text x="1132" y="617" class="small">Created by initialize CPI</text>
+  <path d="M1045 534 H1090" class="cpi"/>
+  <text x="1049" y="516" class="small">withdraw CPI</text>
+
+  <line x1="60" y1="800" x2="1380" y2="800" stroke="#e0e5ed" stroke-width="1.5"/>
+  <text x="60" y="835" class="section">KEY</text>
+  <path d="M112 830 H168" class="line"/>
+  <text x="180" y="835" class="small">Instruction calls / PDA relationships</text>
+  <path d="M430 830 H486" class="cpi"/>
+  <text x="498" y="835" class="small">Cross-program invocation (CPI)</text>
+  <text x="60" y="882" class="small">Vault PDA is a System Program-owned account, not an SPL token account. All balances are in lamports (1 SOL = 1,000,000,000 lamports).</text>
+</svg>

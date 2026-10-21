@@ -13,31 +13,11 @@ it does not currently include a user-facing application.
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    User["User / wallet"]
-    Client["Anchor TypeScript client<br/>tests/pre-req-vault.ts"]
-    VaultProgram["pre-req-vault<br/>Anchor program"]
-    StatePDA["VaultState PDA<br/>[state, user]<br/>stores PDA bumps"]
-    VaultPDA["Vault PDA<br/>[vault, vault_state]<br/>holds SOL as a system account"]
-    SystemProgram["Solana System Program"]
-    Registration["Q3 prerequisites program<br/>TRBZyQHB...KWDM"]
-    ApplicationPDA["Application account PDA<br/>[prereqs, user]"]
+![Pre-Req Vault program architecture diagram](./architecture.svg)
 
-    User --> Client
-    Client -->|"initialize / deposit / withdraw / close"| VaultProgram
-    VaultProgram -->|"initialize state + save bumps"| StatePDA
-    VaultProgram -->|"deposit: user → vault"| SystemProgram
-    SystemProgram --> VaultPDA
-    VaultProgram -->|"withdraw: vault → user<br/>PDA signer seeds"| SystemProgram
-    VaultPDA --> SystemProgram
-    SystemProgram -->|"withdraw transfer"| User
-    VaultProgram -->|"withdraw CPI: initialize(github)"| Registration
-    Registration --> ApplicationPDA
-    VaultProgram -->|"close: transfer remainder + close state"| SystemProgram
-    VaultPDA --> User
-    StatePDA -->|"Anchor close refund"| User
-```
+The diagram summarizes how the user invokes the four instructions, how the
+program's state and vault PDAs relate, and how the System Program and external
+registration program participate in transfers and account creation.
 
 ## Accounts and instruction lifecycle
 
