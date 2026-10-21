@@ -1,0 +1,15 @@
+{
+  "0": "package.json",
+  "1": "VaultState",
+  "2": "lib.rs",
+  "3": "devDependencies",
+  "4": "prelude",
+  "5": "Withdraw",
+  "6": "compilerOptions",
+  "7": "Initialize",
+  "8": ".intialize",
+  "9": ".close",
+  "10": ".deposit",
+  "11": "pre-req-vault",
+  "12": "test_initialize.rs"
+}
